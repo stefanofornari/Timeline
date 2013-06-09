@@ -206,6 +206,7 @@ links.Timeline = function(container) {
         'cluster': false,
         'style': 'box',
         'customStackOrder': false, //a function(a,b) for determining stackorder amongst a group of items. Essentially a comparator, -ve value for "a before b" and vice versa
+        'maxClusterItems': 5,
 
         // i18n: Timeline only has built-in English text per default. Include timeline-locales.js to support more localized text.
         'locale': 'en',
@@ -5220,6 +5221,8 @@ links.Timeline.ClusterGenerator.prototype.getClusters = function (scale) {
         granularity = 2, // TODO: what granularity is needed for the cluster levels?
         timeWindow = 0,  // milliseconds
         maxItems = 5;    // TODO: do not hard code maxItems
+
+    console.log("scale: " + scale);
 
     if (scale > 0) {
         level = Math.round(Math.log(100 / scale) / Math.log(granularity));

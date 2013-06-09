@@ -28,6 +28,8 @@ import ste.xtest.js.JavaScriptTest;
  */
 public class BugFreeOptions extends JavaScriptTest {
 
+    public static final String OPTION_MAX_CLUSTERING_ITEM = "maxClusterItems";
+
     public BugFreeOptions() throws Exception {
         loadScript("src/main/javascript/timeline/timeline.js");
     }
@@ -65,7 +67,6 @@ public class BugFreeOptions extends JavaScriptTest {
         ref.put("editable", Boolean.FALSE);
         ref.put("snapEvents", Boolean.TRUE);
         ref.put("groupChangeable", Boolean.TRUE);
-
         ref.put("showCurrentTime", Boolean.TRUE);
         ref.put("showCustomTime", Boolean.FALSE);
         ref.put("showMajorLabels", Boolean.TRUE);
@@ -81,6 +82,7 @@ public class BugFreeOptions extends JavaScriptTest {
         ref.put("customStackOrder", Boolean.FALSE);
         ref.put("style", "box");
         ref.put("locale", "en");
+        ref.put(OPTION_MAX_CLUSTERING_ITEM, 5);
 
         for (String key: ref.keySet()) {
             System.out.println("Cheking(1) " + key);
