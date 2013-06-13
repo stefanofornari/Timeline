@@ -85,7 +85,6 @@ public class BugFreeOptions extends JavaScriptTest {
         ref.put(OPTION_MAX_CLUSTERING_ITEM, 5);
 
         for (String key: ref.keySet()) {
-            System.out.println("Cheking(1) " + key);
             assertEquals(ref.get(key), exec(String.format("timeline.getOptions()['%s'];", key)));
         }
 

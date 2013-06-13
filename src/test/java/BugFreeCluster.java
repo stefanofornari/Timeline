@@ -115,7 +115,68 @@ public class BugFreeCluster extends JavaScriptTest {
             },
             (NativeObject)clusters.get(6, null)
         );
+        
+        //
+        // Zooming in
+        //
+        clusters = (NativeArray)exec("timeline.clusterGenerator.getClusters(0.005)");
+        assertEquals(3, clusters.getLength());
+        
+        checkCluster(
+            new long[] {
+                1368311118000L, 1368311119000L
+            },
+            (NativeObject)clusters.get(0, null)
+        );
+        
+        checkCluster(
+            new long[] {
+                1368311125000L, 1368311126000L, 1368311127000L, 1368311129000L
+            },
+            (NativeObject)clusters.get(1, null)
+        );
+        
+        checkCluster(
+            new long[] {
+                1368311183000L, 1368311184000L, 1368311187000L
+            },
+            (NativeObject)clusters.get(2, null)
+        );
+        
+        //
+        // Zooming in again
+        //
+        clusters = (NativeArray)exec("timeline.clusterGenerator.getClusters(0.01)");
+        assertEquals(1, clusters.getLength());
+        
+        checkCluster(
+            new long[] {
+                1368311129000L, 1368311130000L
+            },
+            (NativeObject)clusters.get(0, null)
+        );
     }
+    
+    //
+    // Note that we rely on legacyChecks to check the composition of the 
+    // clusters. Here we just make sure that we change that changing the options
+    // the number of clusters changes accordingly.
+    //
+    @Test
+    public void changeMaxClusterItems() throws Throwable {
+        loadScript("src/test/json/test1.js");
+        loadScript("src/test/javascript/cluster2.js");
+        
+        NativeArray clusters = (NativeArray)exec("timeline.clusterGenerator.getClusters(0.004)");
+        assertEquals(15, clusters.getLength());
+        
+        loadScript("src/test/javascript/cluster3.js");
+        
+        clusters = (NativeArray)exec("timeline.clusterGenerator.getClusters(0.004)");
+        assertEquals(18, clusters.getLength());
+    }
+    
+    // -------------------------------------------------------------------------
 
     private void checkCluster(long[] refs, NativeObject cluster) throws Throwable {
         NativeArray items = (NativeArray)cluster.get("items", null);
@@ -129,7 +190,7 @@ public class BugFreeCluster extends JavaScriptTest {
             checkDate(ref, (NativeObject)items.get(i++, null));
         }
     }
-
+    
     private void checkDate(long ref, NativeObject item) throws Throwable {
         Date start = (Date)cx.jsToJava(item.get("start", null), Date.class);
         assertEquals(ref, start.getTime());

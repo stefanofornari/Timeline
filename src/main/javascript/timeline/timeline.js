@@ -454,7 +454,7 @@ links.Timeline.prototype.setData = function(data) {
 
     // prepare data for clustering, by filtering and sorting by type
     if (this.options.cluster) {
-        this.clusterGenerator.setData(this.items);
+        this.clusterGenerator.setData(this.items, this.options);
     }
 
 /*
@@ -5112,6 +5112,7 @@ links.Timeline.prototype.filterItems = function () {
  */
 links.Timeline.ClusterGenerator = function (timeline) {
     this.timeline = timeline;
+    this.maxClusterItems = 5;
     this.clear();
 };
 
@@ -5149,9 +5150,15 @@ links.Timeline.ClusterGenerator.prototype.setData = function (items, options) {
     this.items = items || [];
     this.dataChanged = true;
     this.applyOnChangedLevel = true;
-    if (options && options.applyOnChangedLevel) {
-        this.applyOnChangedLevel = options.applyOnChangedLevel;
+    if (options) {
+        if (options.applyOnChangedLevel) {
+            this.applyOnChangedLevel = options.applyOnChangedLevel;
+        }
+        if (options.maxClusterItems != undefined) {
+            this.maxClusterItems = options.maxClusterItems;
+        }
     }
+    
     // console.log('clustergenerator setData applyOnChangedLevel=' + this.applyOnChangedLevel); // TODO: cleanup
 };
 
@@ -5219,10 +5226,7 @@ links.Timeline.ClusterGenerator.prototype.filterData = function () {
 links.Timeline.ClusterGenerator.prototype.getClusters = function (scale) {
     var level = -1,
         granularity = 2, // TODO: what granularity is needed for the cluster levels?
-        timeWindow = 0,  // milliseconds
-        maxItems = 5;    // TODO: do not hard code maxItems
-
-    console.log("scale: " + scale);
+        timeWindow = 0  // milliseconds
 
     if (scale > 0) {
         level = Math.round(Math.log(100 / scale) / Math.log(granularity));
@@ -5287,11 +5291,11 @@ links.Timeline.ClusterGenerator.prototype.getClusters = function (scale) {
                         }
                         l--;
                     }
-
-                    // aggregate until the number of items is within maxItems
-                    if (neighbors > maxItems) {
+                    
+                    // aggregate until the number of items is within maxClusterItems
+                    if (neighbors > this.maxClusterItems) {
                         // too busy in this window.
-                        var num = neighbors - maxItems + 1;
+                        var num = neighbors - this.maxClusterItems + 1;
                         var clusterItems = [];
 
                         // append the items to the cluster,
