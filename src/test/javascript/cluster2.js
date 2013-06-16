@@ -8,6 +8,5 @@ options = {
 window.location='src/test/html/timeline1.html';
 var timeline = new links.Timeline(document.getElementById('diskone'));
 
-// Draw our timeline with the created data and options
 timeline.setOptions(options);
 timeline.setData(data);
