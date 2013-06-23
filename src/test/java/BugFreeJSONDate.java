@@ -52,4 +52,15 @@ public class BugFreeJSONDate extends JavaScriptTest {
         assertEquals(Double.valueOf(d.getTime()), exec("d.getTime();"));
     }
 
+    @Test
+    public void parseTimeMillis() throws Throwable {
+        Date d = new Date(1370214019000L);
+
+        String s = String.format(
+                       "var d = links.Timeline.parseJSONDate(1370214019000);"
+                   );
+        exec(s);
+        assertEquals(Double.valueOf(d.getTime()), exec("d.getTime();"));
+    }
+
 }
