@@ -44,7 +44,7 @@ public class BugFreeCluster extends JavaScriptTest {
 
     public BugFreeCluster() throws Exception {
         loadScript("src/main/javascript/timeline/timeline.js");
-        loadScript("src/test/javascript/timeline.imageitem.js");
+        loadScript("src/test/javascript/timeline.testitem.js");
     }
 
     //

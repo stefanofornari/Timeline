@@ -26,7 +26,7 @@ if (typeof one === 'undefined') {
 
 
 /**
- * @constructor test.ImageItem
+ * @constructor test.Item
  * @extends links.Timeline.Item
  * @param {Object} data       Object containing parameters start, end
  *                            content, group. type, group.
@@ -36,7 +36,7 @@ if (typeof one === 'undefined') {
  *                                {Number} width
  *                                {Number} height
  */
-test.ImageItem = function (data, options) {
+test.Item = function (data, options) {
     for (var p in data) {
         console.info("p: "+p+'('+data[p]+')');
         console.info(data.title);
@@ -45,14 +45,14 @@ test.ImageItem = function (data, options) {
     links.Timeline.Item.call(this, data, options);
 };
 
-test.ImageItem.prototype = new links.Timeline.Item();
+test.Item.prototype = new links.Timeline.Item();
 
 /**
  * Reflow the Item: retrieve its actual size from the DOM
  * @return {boolean} resized    returns true if the axis is resized
  * @override
  */
-test.ImageItem.prototype.reflow = function () {
+test.Item.prototype.reflow = function () {
     var dom = this.dom,
         dotHeight = dom.dot.offsetHeight,
         dotWidth = dom.dot.offsetWidth,
@@ -74,7 +74,7 @@ test.ImageItem.prototype.reflow = function () {
  * Select the item
  * @override
  */
-test.ImageItem.prototype.select = function () {
+test.Item.prototype.select = function () {
     var dom = this.dom;
     links.Timeline.addClassName(dom, 'timeline-event-selected');
     links.Timeline.addClassName(dom.line, 'timeline-event-selected');
@@ -85,7 +85,7 @@ test.ImageItem.prototype.select = function () {
  * Unselect the item
  * @override
  */
-test.ImageItem.prototype.unselect = function () {
+test.Item.prototype.unselect = function () {
     var dom = this.dom;
     links.Timeline.removeClassName(dom, 'timeline-event-selected');
     links.Timeline.removeClassName(dom.line, 'timeline-event-selected');
@@ -97,7 +97,7 @@ test.ImageItem.prototype.unselect = function () {
  * @return {Element | undefined}
  * @override
  */
-test.ImageItem.prototype.createDOM = function () {
+test.Item.prototype.createDOM = function () {
     // background box
     var divBox = document.createElement("DIV");
     divBox.style.position = "absolute";
@@ -137,7 +137,7 @@ test.ImageItem.prototype.createDOM = function () {
  * @param {Element} container
  * @override
  */
-test.ImageItem.prototype.showDOM = function (container) {
+test.Item.prototype.showDOM = function (container) {
     var dom = this.dom;
     if (!dom) {
         dom = this.createDOM();
@@ -164,7 +164,7 @@ test.ImageItem.prototype.showDOM = function (container) {
  * memory
  * @override
  */
-test.ImageItem.prototype.hideDOM = function () {
+test.Item.prototype.hideDOM = function () {
     var dom = this.dom;
     if (dom) {
         if (dom.parentNode) {
@@ -185,7 +185,7 @@ test.ImageItem.prototype.hideDOM = function () {
  * of the item
  * @override
  */
-test.ImageItem.prototype.updateDOM = function () {
+test.Item.prototype.updateDOM = function () {
     var divBox = this.dom;
     if (divBox) {
         var divLine = divBox.line;
@@ -222,7 +222,7 @@ test.ImageItem.prototype.updateDOM = function () {
  * @param {links.Timeline} timeline
  * @override
  */
-test.ImageItem.prototype.updatePosition = function (timeline) {
+test.Item.prototype.updatePosition = function (timeline) {
     var dom = this.dom;
     if (dom) {
         var left = timeline.timeToScreen(this.start),
@@ -267,7 +267,7 @@ test.ImageItem.prototype.updatePosition = function (timeline) {
  * @return {Boolean} visible
  * @override
  */
-test.ImageItem.prototype.isVisible = function (start, end) {
+test.Item.prototype.isVisible = function (start, end) {
     if (this.cluster) {
         return false;
     }
@@ -281,7 +281,7 @@ test.ImageItem.prototype.isVisible = function (start, end) {
  * @param {Number} right
  * @override
  */
-test.ImageItem.prototype.setPosition = function (left, right) {
+test.Item.prototype.setPosition = function (left, right) {
     var dom = this.dom;
 
     dom.style.left = (left - this.width / 2) + "px";
@@ -300,7 +300,7 @@ test.ImageItem.prototype.setPosition = function (left, right) {
  * @return {Number} right
  * @override
  */
-test.ImageItem.prototype.getRight = function (timeline) {
+test.Item.prototype.getRight = function (timeline) {
     var boxAlign = (timeline.options.box && timeline.options.box.align) ?
         timeline.options.box.align : undefined;
 

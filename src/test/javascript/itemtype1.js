@@ -12,7 +12,7 @@ data4 = {"title":"this will be a range", "start":"2012-03-04T18:27:24Z", "end":"
 window.location='src/test/html/timeline1.html';
 var timeline = new links.Timeline(document.getElementById('diskone'));
 
-timeline.addItemType('image', test.ImageItem);
+timeline.addItemType('image', test.Item);
 
 timeline.setOptions(options);
 

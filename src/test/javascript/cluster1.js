@@ -12,8 +12,8 @@ var timeline = new links.Timeline(document.getElementById('diskone'));
 // We for both image and cluster the same testitem since for now we do not need
 // a specific item for each type.
 //
-timeline.addItemType('image', test.ImageItem);
-timeline.addItemType('cluster', test.ImageItem);
+timeline.addItemType('image', test.Item);
+timeline.addItemType('cluster', test.Item);
 
 timeline.setOptions(options);
 timeline.setData(data);
