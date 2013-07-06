@@ -236,9 +236,9 @@ links.Timeline = function(container) {
 
     // add standard item types
     this.itemTypes = {
-        box:   links.Timeline.ItemBox,
-        range: links.Timeline.ItemRange,
-        dot:   links.Timeline.ItemDot
+        box    : links.Timeline.ItemBox,
+        range  : links.Timeline.ItemRange,
+        dot    : links.Timeline.ItemDot
     };
 
     // initialize data
@@ -4453,10 +4453,10 @@ links.Timeline.prototype.createItem = function(itemData) {
     }
 
     if (type in this.itemTypes) {
-        return new this.itemTypes[type](itemData, {'top': initialTop})
+        return new this.itemTypes[type](itemData, {'top': initialTop});
     }
 
-    console.log('ERROR: Unknown event style "' + type + '"');
+    console.log('ERROR: Unknown event type "' + type + '"');
     return new links.Timeline.Item(itemData, {
         'top': initialTop
     });
@@ -5351,23 +5351,29 @@ links.Timeline.ClusterGenerator.prototype.getClusters = function (scale) {
                         if (containsRanges) {
                             // boxes and/or ranges
                             cluster = this.timeline.createItem({
-                                'start': new Date(min),
-                                'end': new Date(max),
-                                'content': content,
-                                'group': group
+                                'start'    : new Date(min),
+                                'end'      : new Date(max),
+                                'content'  : content,
+                                'group'    : group,
+                                'type'     : 'cluster',
+                                'isCluster': true,
+                                'items'    : clusterItems
                             });
                         }
                         else {
                             // boxes only
+
+                            // cluster item creation
                             cluster = this.timeline.createItem({
-                                'start': new Date(avg),
-                                'content': content,
-                                'group': group
+                                'start'    : new Date(avg),
+                                'content'  : content,
+                                'group'    : group,
+                                'type'     : 'cluster',
+                                'isCluster': true,
+                                'items'    : clusterItems
                             });
                         }
-                        cluster.isCluster = true;
-                        cluster.items = clusterItems;
-                        cluster.items.forEach(function (item) {
+                        clusterItems.forEach(function (item) {
                             item.cluster = cluster;
                         });
 
