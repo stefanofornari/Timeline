@@ -30,8 +30,8 @@
  * Copyright (c) 2011-2013 Almende B.V.
  *
  * @author     Jos de Jong, <jos@almende.org>
- * @date    2013-04-18
- * @version 2.4.2
+ * @date    2013-08-20
+ * @version 2.5.0
  */
 
 /*
@@ -399,10 +399,10 @@ links.Timeline.mapColumnIds = function (dataTable) {
         cols.start = 0;
         cols.end = 1;
         cols.content = 2;
-        if (colCount >= 3) {cols.group = 3}
-        if (colCount >= 4) {cols.className = 4}
-        if (colCount >= 5) {cols.editable = 5}
-        if (colCount >= 6) {cols.type = 6}
+        if (colCount > 3) {cols.group = 3}
+        if (colCount > 4) {cols.className = 4}
+        if (colCount > 5) {cols.editable = 5}
+        if (colCount > 6) {cols.type = 6}
     }
 
     return cols;
@@ -441,7 +441,7 @@ links.Timeline.prototype.setData = function(data) {
                 'group':     ((cols.group != undefined)     ? data.getValue(row, cols.group)     : undefined),
                 'className': ((cols.className != undefined) ? data.getValue(row, cols.className) : undefined),
                 'editable':  ((cols.editable != undefined)  ? data.getValue(row, cols.editable)  : undefined),
-                'type':      ((cols.editable != undefined)  ? data.getValue(row, cols.type)      : undefined)
+                'type':      ((cols.type != undefined)      ? data.getValue(row, cols.type)      : undefined)
             }));
         }
     }
@@ -4369,10 +4369,10 @@ links.Timeline.prototype.getItem = function (index) {
     if (item.group) {
         properties.group = this.getGroupName(item.group);
     }
-    if ('className' in item) {
-        properties.className = this.getGroupName(item.className);
+    if (item.className) {
+        properties.className = item.className;
     }
-    if (item.hasOwnProperty('editable') && (typeof item.editable != 'undefined')) {
+    if (typeof item.editable !== 'undefined') {
         properties.editable = item.editable;
     }
     if (item.type) {
@@ -6334,24 +6334,21 @@ links.Timeline.getAbsoluteTop = function(elem) {
  * @return {Number} pageY
  */
 links.Timeline.getPageY = function (event) {
+    if (('targetTouches' in event) && event.targetTouches.length) {
+        event = event.targetTouches[0];
+    }
+
     if ('pageY' in event) {
         return event.pageY;
     }
-    else {
-        var clientY;
-        if (('targetTouches' in event) && event.targetTouches.length) {
-            clientY = event.targetTouches[0].clientY;
-        }
-        else {
-            clientY = event.clientY;
-        }
 
-        var doc = document.documentElement;
-        var body = document.body;
-        return clientY +
-            ( doc && doc.scrollTop || body && body.scrollTop || 0 ) -
-            ( doc && doc.clientTop || body && body.clientTop || 0 );
-    }
+    // calculate pageY from clientY
+    var clientY = event.clientY;
+    var doc = document.documentElement;
+    var body = document.body;
+    return clientY +
+        ( doc && doc.scrollTop || body && body.scrollTop || 0 ) -
+        ( doc && doc.clientTop || body && body.clientTop || 0 );
 };
 
 /**
@@ -6360,24 +6357,21 @@ links.Timeline.getPageY = function (event) {
  * @return {Number} pageX
  */
 links.Timeline.getPageX = function (event) {
-    if ('pageY' in event) {
+    if (('targetTouches' in event) && event.targetTouches.length) {
+        event = event.targetTouches[0];
+    }
+
+    if ('pageX' in event) {
         return event.pageX;
     }
-    else {
-        var clientX;
-        if (('targetTouches' in event) && event.targetTouches.length) {
-            clientX = event.targetTouches[0].clientX;
-        }
-        else {
-            clientX = event.clientX;
-        }
 
-        var doc = document.documentElement;
-        var body = document.body;
-        return clientX +
-            ( doc && doc.scrollLeft || body && body.scrollLeft || 0 ) -
-            ( doc && doc.clientLeft || body && body.clientLeft || 0 );
-    }
+    // calculate pageX from clientX
+    var clientX = event.clientX;
+    var doc = document.documentElement;
+    var body = document.body;
+    return clientX +
+        ( doc && doc.scrollLeft || body && body.scrollLeft || 0 ) -
+        ( doc && doc.clientLeft || body && body.clientLeft || 0 );
 };
 
 /**
