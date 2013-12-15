@@ -30,8 +30,8 @@
  * Copyright (c) 2011-2013 Almende B.V.
  *
  * @author     Jos de Jong, <jos@almende.org>
- * @date    2013-08-20
- * @version 2.5.0
+ * @date    2013-12-13
+ * @version 2.5.1
  */
 
 /*
@@ -346,6 +346,7 @@ links.Timeline.prototype.setOptions = function(options) {
     this.options.autoHeight = (this.options.height === "auto");
 };
 
+// === KEEP THIS
 /**
  * Get options for the timeline.
  *
@@ -354,6 +355,7 @@ links.Timeline.prototype.setOptions = function(options) {
 links.Timeline.prototype.getOptions = function() {
     return this.options;
 };
+// ===
 
 /**
  * Add new type of items
@@ -460,7 +462,9 @@ links.Timeline.prototype.setData = function(data) {
 
     // prepare data for clustering, by filtering and sorting by type
     if (this.options.cluster) {
+// === KEEP THIS
         this.clusterGenerator.setData(this.items, this.options);
+// ===
     }
 
     this.render({
@@ -862,8 +866,6 @@ links.Timeline.prototype.repaintFrame = function() {
     if (!dom.frame) {
         dom.frame = document.createElement("DIV");
         dom.frame.className = "timeline-frame ui-widget ui-widget-content ui-corner-all";
-        dom.frame.style.position = "relative";
-        dom.frame.style.overflow = "hidden";
         dom.container.appendChild(dom.frame);
         needsReflow = true;
     }
@@ -881,8 +883,7 @@ links.Timeline.prototype.repaintFrame = function() {
     if (!dom.content) {
         // create content box where the axis and items will be created
         dom.content = document.createElement("DIV");
-        dom.content.style.position = "relative";
-        dom.content.style.overflow = "hidden";
+        dom.content.className = "timeline-content";
         dom.frame.appendChild(dom.content);
 
         var timelines = document.createElement("DIV");
@@ -2797,6 +2798,7 @@ links.Timeline.prototype.onMouseMove = function (event) {
                 right = left + (params.itemRight - params.itemLeft);
                 item.end = this.screenToTime(right);
             }
+            this.trigger('change');
         }
 
         item.setPosition(left, right);
@@ -2905,10 +2907,10 @@ links.Timeline.prototype.onMouseUp = function (event) {
                 'end': item.end
             });
 
-            // fire an add or change event.
+            // fire an add or changed event. 
             // Note that the change can be canceled from within an event listener if
             // this listener calls the method cancelChange().
-            this.trigger(params.addItem ? 'add' : 'change');
+            this.trigger(params.addItem ? 'add' : 'changed');
 
             if (params.addItem) {
                 if (this.applyAdd) {
@@ -3457,8 +3459,10 @@ links.Timeline.prototype.getGroupFromHeight = function(height) {
  */
 links.Timeline.Item = function (data, options) {
     if (data) {
+// === KEEP THIS
         this.start = links.Timeline.parseJSONDate(data.start);
         this.end = links.Timeline.parseJSONDate(data.end);
+// ===
         this.content = data.content;
         this.className = data.className;
         this.editable = data.editable;
@@ -3507,6 +3511,7 @@ links.Timeline.Item.prototype.getImageUrls = function (imageUrls) {
     }
 };
 
+// === KEEP THIS
 /**
  * Returns the type of the item (as in the item data 'type'.
  *
@@ -3519,6 +3524,7 @@ links.Timeline.Item.prototype.getType = function() {
 
     return "item";
 };
+// ===
 
 /**
  * Select the item
@@ -4452,12 +4458,14 @@ links.Timeline.prototype.addItems = function (itemsData, preventRender) {
 links.Timeline.prototype.createItem = function(itemData) {
     var type = itemData.type || (itemData.end ? 'range' : this.options.style);
 
+// === KEEP THIS
     //
     // Let's make sure that event if not defined, we assign the default style
     //
     itemData.type = type;
 
     itemData.group = this.getGroup(itemData.group);
+// ====
 
     // TODO: is initialTop needed?
     var initialTop,
@@ -4469,6 +4477,7 @@ links.Timeline.prototype.createItem = function(itemData) {
         initialTop = this.size.contentHeight - options.eventMarginAxis - options.eventMargin / 2;
     }
 
+// === KEEP THIS
     if (type in this.itemTypes) {
         return new this.itemTypes[type](itemData, {'top': initialTop});
     }
@@ -4477,6 +4486,7 @@ links.Timeline.prototype.createItem = function(itemData) {
     return new links.Timeline.Item(itemData, {
         'top': initialTop
     });
+// ===
 };
 
 /**
@@ -5152,7 +5162,9 @@ links.Timeline.prototype.filterItems = function () {
  */
 links.Timeline.ClusterGenerator = function (timeline) {
     this.timeline = timeline;
+// === KEEP THIS
     this.maxClusterItems = 5;
+// ===
     this.clear();
 };
 
@@ -5190,6 +5202,8 @@ links.Timeline.ClusterGenerator.prototype.setData = function (items, options) {
     this.items = items || [];
     this.dataChanged = true;
     this.applyOnChangedLevel = true;
+
+// === KEEP THIS
     if (options) {
         if (options.applyOnChangedLevel) {
             this.applyOnChangedLevel = options.applyOnChangedLevel;
@@ -5198,7 +5212,7 @@ links.Timeline.ClusterGenerator.prototype.setData = function (items, options) {
             this.maxClusterItems = options.maxClusterItems;
         }
     }
-
+// ===
     // console.log('clustergenerator setData applyOnChangedLevel=' + this.applyOnChangedLevel); // TODO: cleanup
 };
 
@@ -5332,10 +5346,12 @@ links.Timeline.ClusterGenerator.prototype.getClusters = function (scale) {
                         l--;
                     }
 
+// === KEEP THIS
                     // aggregate until the number of items is within maxClusterItems
                     if (neighbors > this.maxClusterItems) {
                         // too busy in this window.
                         var num = neighbors - this.maxClusterItems + 1;
+// ===
                         var clusterItems = [];
 
                         // append the items to the cluster,
@@ -5376,15 +5392,17 @@ links.Timeline.ClusterGenerator.prototype.getClusters = function (scale) {
                                 'start'    : new Date(min),
                                 'end'      : new Date(max),
                                 'content'  : content,
+// === KEEP THIS
                                 'group'    : group,
                                 'type'     : 'cluster',
                                 'isCluster': true,
                                 'items'    : clusterItems
+// ===
                             });
                         }
                         else {
                             // boxes only
-
+// === KEEP THIS
                             // cluster item creation
                             cluster = this.timeline.createItem({
                                 'start'    : new Date(avg),
@@ -5398,6 +5416,7 @@ links.Timeline.ClusterGenerator.prototype.getClusters = function (scale) {
                         clusterItems.forEach(function (item) {
                             item.cluster = cluster;
                         });
+// ===
 
                         clusters.push(cluster);
                         i += num;
@@ -6452,6 +6471,7 @@ links.Timeline.parseJSONDate = function (date) {
         return undefined;
     }
 
+// === KEEP THIS
     //test for date or timestamp
     if (date instanceof Date) {
         return date;
@@ -6467,6 +6487,7 @@ links.Timeline.parseJSONDate = function (date) {
         return new Date(Date.UTC(+a[1], +a[2] - 1, +a[3], +a[4],
             +a[5], +a[6]));
     }
+// ===
 
     // test for MS format.
     // FIXME: will fail on a Number
