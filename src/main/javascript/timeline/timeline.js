@@ -1590,6 +1590,7 @@ links.Timeline.prototype.recalcItems = function () {
         }
 
         // calculate top position of the visible items
+        /**
         for (i = 0, iMax = renderedItems.length; i < iMax; i++) {
             item = renderedItems[i];
             group = item.group;
@@ -1598,6 +1599,7 @@ links.Timeline.prototype.recalcItems = function () {
                 item.top = group.top;
             }
         }
+        **/
 
         resized = true;
     }
@@ -2907,7 +2909,7 @@ links.Timeline.prototype.onMouseUp = function (event) {
                 'end': item.end
             });
 
-            // fire an add or changed event. 
+            // fire an add or changed event.
             // Note that the change can be canceled from within an event listener if
             // this listener calls the method cancelChange().
             this.trigger(params.addItem ? 'add' : 'changed');
@@ -4760,11 +4762,13 @@ links.Timeline.prototype.unselectItem = function() {
  *                                         defaults to false.
  */
 links.Timeline.prototype.stackItems = function(animate) {
+    /**
     if (this.groups.length > 0) {
         // under this conditions we refuse to stack the events
         // TODO: implement support for stacking items per group
         return;
     }
+    **/
 
     if (animate == undefined) {
         animate = false;
@@ -4816,6 +4820,22 @@ links.Timeline.prototype.stackCancelAnimation = function() {
     }
 };
 
+links.Timeline.prototype.getItemsByGroup = function(items) {
+    var itemsByGroup = {};
+    for (i = 0, iMax = items.length; i < iMax; ++i) {
+        var item = items[i];
+        var group = (item.group) ? item.group : "undefined";
+
+        if (!itemsByGroup[group]) {
+            itemsByGroup[group] = [];
+        }
+
+        itemsByGroup[group].push(item);
+    }
+
+    return itemsByGroup;
+};
+
 
 /**
  * Order the items in the array this.items. The default order is determined via:
@@ -4860,16 +4880,57 @@ links.Timeline.prototype.stackCalculateFinal = function(items) {
     var i,
         iMax,
         size = this.size,
+        options = this.options,
+        axisOnTop = options.axisOnTop,
+        finalItems;
+
+    groupedItems = this.getItemsByGroup(items);
+
+    // initialize final positions
+    finalItems = this.initialItemsPosition(items);
+
+    if (!this.options.stackEvents) {
+        return finalItems;
+    }
+
+    // calculate new, non-overlapping positions
+    //var items = sortedItems;
+    for (i = 0, iMax = finalItems.length; i < iMax; i++) {
+        //for (var i = finalItems.length - 1; i >= 0; i--) {
+        var finalItem = finalItems[i];
+        var collidingItem = null;
+        do {
+            // TODO: optimize checking for overlap. when there is a gap without items,
+            //  you only need to check for items from the next item on, not from zero
+            collidingItem = this.stackItemsCheckOverlap(finalItems, i, 0, i-1);
+            if (collidingItem != null) {
+                // There is a collision. Reposition the event above the colliding element
+                if (axisOnTop) {
+                    finalItem.top = collidingItem.top + collidingItem.height + eventMargin;
+                }
+                else {
+                    finalItem.top = collidingItem.top - finalItem.height - eventMargin;
+                }
+                finalItem.bottom = finalItem.top + finalItem.height;
+            }
+        } while (collidingItem);
+    }
+
+    return finalItems;
+};
+
+links.Timeline.prototype.initialItemsPosition = function(items) {
+    var size = this.size,
+        options = this.options,
         axisTop = size.axis.top,
         axisHeight = size.axis.height,
-        options = this.options,
         axisOnTop = options.axisOnTop,
         eventMargin = options.eventMargin,
         eventMarginAxis = options.eventMarginAxis,
+        eventMargin = options.eventMargin,
         finalItems = [];
 
-    // initialize final positions
-    for (i = 0, iMax = items.length; i < iMax; i++) {
+    for (i = 0, iMax = items.length; i < iMax; ++i) {
         var item = items[i],
             top,
             bottom,
@@ -4896,34 +4957,8 @@ links.Timeline.prototype.stackCalculateFinal = function(items) {
         };
     }
 
-    if (this.options.stackEvents) {
-        // calculate new, non-overlapping positions
-        //var items = sortedItems;
-        for (i = 0, iMax = finalItems.length; i < iMax; i++) {
-            //for (var i = finalItems.length - 1; i >= 0; i--) {
-            var finalItem = finalItems[i];
-            var collidingItem = null;
-            do {
-                // TODO: optimize checking for overlap. when there is a gap without items,
-                //  you only need to check for items from the next item on, not from zero
-                collidingItem = this.stackItemsCheckOverlap(finalItems, i, 0, i-1);
-                if (collidingItem != null) {
-                    // There is a collision. Reposition the event above the colliding element
-                    if (axisOnTop) {
-                        finalItem.top = collidingItem.top + collidingItem.height + eventMargin;
-                    }
-                    else {
-                        finalItem.top = collidingItem.top - finalItem.height - eventMargin;
-                    }
-                    finalItem.bottom = finalItem.top + finalItem.height;
-                }
-            } while (collidingItem);
-        }
-    }
-
     return finalItems;
-};
-
+}
 
 /**
  * Move the events one step in the direction of their final positions
