@@ -43,6 +43,8 @@ test.Item = function (data, options) {
         this[p] = data[p];
     }
     links.Timeline.Item.call(this, data, options);
+
+    this.pos = { left: 0, right: 0};
 };
 
 test.Item.prototype = new links.Timeline.Item();
@@ -288,35 +290,26 @@ test.Item.prototype.setPosition = function (left, right) {
     dom.line.style.left = (left - this.lineWidth / 2) + "px";
     dom.dot.style.left = (left - this.dotWidth / 2) + "px";
 
-    if (this.group) {
-        this.top = this.group.top;
-        dom.style.top = this.top + 'px';
-    }
+    this.pos.left = left;
+    this.pos.right = right;
 };
 
 /**
- * Calculate the right position of the item
+ * Return the right position of the item
  * @param {links.Timeline} timeline
  * @return {Number} right
  * @override
  */
 test.Item.prototype.getRight = function (timeline) {
-    var boxAlign = (timeline.options.box && timeline.options.box.align) ?
-        timeline.options.box.align : undefined;
-
-    var left = timeline.timeToScreen(this.start);
-    var right;
-    if (boxAlign == 'right') {
-        right = left;
-    }
-    else if (boxAlign == 'left') {
-        right = (left + this.width);
-    }
-    else { // default or 'center'
-        right = (left + this.width / 2);
-    }
-
-    return right;
+    return this.pos.right;
 };
 
-
+/**
+ * Return the width of the item
+ * @param {links.Timeline} timeline
+ * @return {Number} right
+ * @override
+ */
+test.Item.prototype.getWidth = function (timeline) {
+    return this.pos.right-this.pos.left;
+};

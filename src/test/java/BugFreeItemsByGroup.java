@@ -37,7 +37,7 @@ public class BugFreeItemsByGroup extends JavaScriptTest {
     }
 
     @Test
-    public void getItemsByGroup() throws Throwable {
+    public void getItemsByGroupWithPlainItems() throws Throwable {
         loadScript("src/test/javascript/stackwithgroups1.js");
 
         //
@@ -64,6 +64,108 @@ public class BugFreeItemsByGroup extends JavaScriptTest {
         //
         ret = (NativeObject)exec("ret = timeline.getItemsByGroup([]);");
         assertEquals(UniqueTag.NOT_FOUND, ret.get("image", null));
+    }
+
+    /**
+     * timeline.draw() processes the items so that their group becomes an object
+     * where the name of the group goes in group.content.
+     *
+     * @throws Throwable
+     */
+    @Test
+    public void getItemsByGroupWithGroupObjects() throws Throwable {
+        loadScript("src/test/javascript/stackwithgroups2.js");
+
+        //
+        // some real values
+        //
+        NativeObject ret = (NativeObject)exec("ret = timeline.getItemsByGroup(data);");
+        NativeArray images = (NativeArray)ret.get("image", null);
+        NativeArray files = (NativeArray)ret.get("file", null);
+        NativeArray undefined = (NativeArray)ret.get("undefined", null);
+        assertEquals(3, images.getLength());
+        assertEquals("image1", exec("ret['image'][0].title"));
+        assertEquals("image2", exec("ret['image'][1].title"));
+        assertEquals("image3", exec("ret['image'][2].title"));
+        assertEquals(4, files.getLength());
+        assertEquals("file1", exec("ret['file'][0].title"));
+        assertEquals("file2", exec("ret['file'][1].title"));
+        assertEquals("file3", exec("ret['file'][2].title"));
+        assertEquals("file4", exec("ret['file'][3].title"));
+        assertEquals(2, undefined.getLength());
+        assertEquals("file5", exec("ret['undefined'][0].title"));
+
+        //
+        // Empty array
+        //
+        ret = (NativeObject)exec("ret = timeline.getItemsByGroup([]);");
+        assertEquals(UniqueTag.NOT_FOUND, ret.get("image", null));
+    }
+
+    @Test
+    public void stackCalculateFinalWithGroupsAndEmptyItems() throws Exception {
+        loadScript("src/test/javascript/timeline.testitem.js");
+        loadScript("src/test/javascript/stackwithgroups3.js");
+
+        //
+        // empty array first
+        //
+        NativeArray ret = (NativeArray)exec("ret = timeline.stackCalculateFinal({});");
+        assertEquals(0, ret.getLength());
+    }
+
+    @Test
+    public void stackCalculateFinalWithGroupsWithCollisions() throws Exception {
+        loadScript("src/test/javascript/timeline.testitem.js");
+        loadScript("src/test/javascript/stackwithgroups3.js");
+
+        NativeArray ret = (NativeArray)exec("ret = timeline.stackCalculateFinal(items1);");
+        assertEquals(9, ret.getLength());
+        for (int i=0; i<9; ++i) {
+            System.out.println(exec("ret["+i+"].top;"));
+        }
+        assertEquals("file5", exec("ret[0].item.title;"));
+        assertEquals(75.0, exec("ret[0].top;"));
+        assertEquals(45.0, exec("ret[0].item.group.itemsHeight;"));
+
+        assertEquals("file1", exec("ret[1].item.title;"));
+        assertEquals(75.0 , exec("ret[1].top;"));
+
+        assertEquals("file3", exec("ret[2].item.title;"));
+        assertEquals(75.0 , exec("ret[2].top;"));
+
+        assertEquals("file2", exec("ret[3].item.title;"));
+        assertEquals(85.0 , exec("ret[3].top;"));
+
+        assertEquals("file4", exec("ret[4].item.title;"));
+        assertEquals(95.0 , exec("ret[4].top;"));
+
+        assertEquals("file6", exec("ret[5].item.title;"));
+        assertEquals(75.0 , exec("ret[5].top;"));
+
+        assertEquals("image1", exec("ret[6].item.title;"));
+        assertEquals(140.0, exec("ret[6].top;"));
+
+        assertEquals("image2", exec("ret[7].item.title;"));
+        assertEquals(150.0, exec("ret[7].top;"));
+        assertEquals(35.0, exec("ret[7].item.group.itemsHeight;"));
+
+        assertEquals("image3", exec("ret[8].item.title;"));
+        assertEquals(140.0, exec("ret[8].top;"));
+    }
+
+    @Test
+    public void stackCalculateFinalWithGroupsWithoutCollisions() throws Exception {
+        loadScript("src/test/javascript/timeline.testitem.js");
+        loadScript("src/test/javascript/stackwithgroups3.js");
+
+        //
+        // with items with collisions now
+        //
+        NativeArray ret = (NativeArray)exec("ret = timeline.stackCalculateFinal(items2);");
+        assertEquals(4, ret.getLength());
+        assertEquals(25.0, exec("ret[0].item.group.itemsHeight;"));
+        assertEquals(25.0, exec("ret[1].item.group.itemsHeight;"));
     }
 
 }
