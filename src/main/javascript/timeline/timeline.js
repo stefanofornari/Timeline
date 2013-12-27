@@ -4874,9 +4874,9 @@ links.Timeline.prototype.stackCalculateFinal = function(items) {
         size = this.size,
         options = this.options,
         axisOnTop = options.axisOnTop,
-        eventMarginAxis = options.eventMarginAxis,
-        groupBase = size.axis.height,
         eventMargin = options.eventMargin,
+        eventMarginAxis = options.eventMarginAxis,
+        groupBase = (axisOnTop) ? size.axis.height + eventMarginAxis + eventMargin/2: size.axis.top - eventMarginAxis,
         finalItems = [],
         groupFinalItems;
 
@@ -4922,20 +4922,31 @@ links.Timeline.prototype.stackCalculateFinal = function(items) {
                         finalItem.top = collidingItem.top - finalItem.height - eventMargin;
                     }
                     finalItem.bottom = finalItem.top + finalItem.height;
-                    console.log("b: " + finalItem.bottom);
                 }
             } while (collidingItem);
 
-            group.itemsHeight = (group.itemsHeight)
-                              ? Math.max(group.itemsHeight, finalItem.bottom-groupBase)
-                              : finalItem.bottom-groupBase;
+            console.log("b: " + finalItem.bottom);
+
+            if (axisOnTop) {
+                group.itemsHeight = (group.itemsHeight)
+                                  ? Math.max(group.itemsHeight, finalItem.bottom - groupBase + eventMargin)
+                                  : finalItem.height + eventMarginAxis;
+            } else {
+                group.itemsHeight = (group.itemsHeight)
+                                  ? Math.max(group.itemsHeight, groupBase - finalItem.top)
+                                  : finalItem.height + eventMarginAxis;
+            }
         }
 
         console.log("h: " + group.itemsHeight);
         groupFinalItems.forEach(function(item) {
            finalItems.push(item);
         });
-        groupBase += (group.itemsHeight + eventMarginAxis);
+        if (axisOnTop) {
+            groupBase += group.itemsHeight + eventMargin;
+        } else {
+            groupBase -= (group.itemsHeight + eventMarginAxis + eventMargin);
+        }
     }
 
     return finalItems;
@@ -4944,7 +4955,6 @@ links.Timeline.prototype.stackCalculateFinal = function(items) {
 links.Timeline.prototype.initialItemsPosition = function(items, groupBase) {
     var size = this.size,
         options = this.options,
-        axisTop = size.axis.top,
         axisOnTop = options.axisOnTop,
         eventMargin = options.eventMargin,
         eventMarginAxis = options.eventMarginAxis,
@@ -4965,9 +4975,10 @@ links.Timeline.prototype.initialItemsPosition = function(items, groupBase) {
             left = right - width;
 
         if (axisOnTop) {
-            top = groupBase + eventMarginAxis + eventMargin / 2;
+            //top = groupBase + eventMarginAxis + eventMargin / 2;
+            top = groupBase + eventMargin;
         } else {
-            top = axisTop - height - eventMarginAxis - groupBase - eventMargin / 2;
+            top = groupBase - height - eventMarginAxis - eventMargin / 2;
         }
         bottom = top + height;
 
@@ -4983,6 +4994,7 @@ links.Timeline.prototype.initialItemsPosition = function(items, groupBase) {
 
     return finalItems;
 }
+
 
 /**
  * Move the events one step in the direction of their final positions
@@ -5344,14 +5356,6 @@ links.Timeline.ClusterGenerator.prototype.getClusters = function (scale) {
     if (scale > 0) {
         level = Math.round(Math.log(100 / scale) / Math.log(granularity));
         timeWindow = Math.pow(granularity, level);
-
-        // groups must have a larger time window, as the items will not be stacked
-        //
-        // TODO: to be removed after stacking with groups
-        //
-        if (this.timeline.groups && this.timeline.groups.length) {
-            timeWindow *= 4;
-        }
     }
 
     // clear the cache when and re-filter the data when needed.
