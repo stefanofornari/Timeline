@@ -173,37 +173,35 @@ public class BugFreeItemsByGroup extends JavaScriptTest {
 
         NativeArray ret = (NativeArray)exec("ret = timeline.stackCalculateFinal(items1);");
         assertEquals(9, ret.getLength());
-        for (int i=0; i<9; ++i) {
-            System.out.println(exec("ret["+i+"].top;"));
-        }
+        
         assertEquals("file5", exec("ret[0].item.title;"));
-        assertEquals(1955.0, exec("ret[0].top;"));
-        assertEquals(65.0, exec("ret[0].item.group.itemsHeight;"));
+        assertEquals(1960.0, exec("ret[0].top;"));
+        assertEquals(40.0, exec("ret[0].item.group.itemsHeight;"));
 
         assertEquals("file1", exec("ret[1].item.title;"));
-        assertEquals(1955.0 , exec("ret[1].top;"));
+        assertEquals(1960.0 , exec("ret[1].top;"));
 
         assertEquals("file3", exec("ret[2].item.title;"));
-        assertEquals(1955.0 , exec("ret[2].top;"));
+        assertEquals(1960.0 , exec("ret[2].top;"));
 
         assertEquals("file2", exec("ret[3].item.title;"));
-        assertEquals(1945.0 , exec("ret[3].top;"));
+        assertEquals(1950.0 , exec("ret[3].top;"));
 
         assertEquals("file4", exec("ret[4].item.title;"));
-        assertEquals(1935.0 , exec("ret[4].top;"));
+        assertEquals(1940.0 , exec("ret[4].top;"));
 
         assertEquals("file6", exec("ret[5].item.title;"));
-        assertEquals(1955.0 , exec("ret[5].top;"));
+        assertEquals(1960.0 , exec("ret[5].top;"));
 
         assertEquals("image1", exec("ret[6].item.title;"));
-        assertEquals(1860.0, exec("ret[6].top;"));
-        assertEquals(55.0, exec("ret[6].item.group.itemsHeight;"));
+        assertEquals(1910.0, exec("ret[6].top;"));
+        assertEquals(30.0, exec("ret[6].item.group.itemsHeight;"));
 
         assertEquals("image2", exec("ret[7].item.title;"));
-        assertEquals(1850.0, exec("ret[7].top;"));
+        assertEquals(1900.0, exec("ret[7].top;"));
 
         assertEquals("image3", exec("ret[8].item.title;"));
-        assertEquals(1860.0, exec("ret[8].top;"));
+        assertEquals(1910.0, exec("ret[8].top;"));
     }
 
     @Test

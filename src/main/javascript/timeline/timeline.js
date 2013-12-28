@@ -1560,9 +1560,8 @@ links.Timeline.prototype.recalcItems = function () {
             group = groups[i];
 
             //
-            // TODO: how to apply a max height?
+            // TODO: Do we want to apply a max height? how ?
             //
-            //var groupHeight = Math.max(group.labelHeight || 0, group.itemsHeight || 0);
             var groupHeight = group.itemsHeight;
             resized = resized || (groupHeight != group.height);
             group.height = groupHeight;
@@ -4876,7 +4875,9 @@ links.Timeline.prototype.stackCalculateFinal = function(items) {
         axisOnTop = options.axisOnTop,
         eventMargin = options.eventMargin,
         eventMarginAxis = options.eventMarginAxis,
-        groupBase = (axisOnTop) ? size.axis.height + eventMarginAxis + eventMargin/2: size.axis.top - eventMarginAxis,
+        groupBase = (axisOnTop)
+                  ? size.axis.height + eventMarginAxis + eventMargin/2
+                  : size.contentHeight - eventMarginAxis - eventMargin/2,
         finalItems = [],
         groupFinalItems;
 
@@ -4891,12 +4892,6 @@ links.Timeline.prototype.stackCalculateFinal = function(items) {
 
         // initialize final positions
         groupFinalItems = this.initialItemsPosition(groupedItems[group.content], groupBase);
-        for (i=0; i<groupFinalItems.length; ++i) {
-            console.log("item: " + groupFinalItems[i].item.id);
-            console.log("left: " + groupFinalItems[i].left);
-            console.log("top: " + groupFinalItems[i].top);
-            console.log("height: " + group.itemsHeight);
-        }
 
         if (!this.options.stackEvents) {
             continue;
@@ -4907,13 +4902,11 @@ links.Timeline.prototype.stackCalculateFinal = function(items) {
             var finalItem = groupFinalItems[i];
             var collidingItem = null;
 
-            console.log("checking for collision " + finalItem.item.id);
             do {
                 // TODO: optimize checking for overlap. when there is a gap without items,
                 //  you only need to check for items from the next item on, not from zero
                 collidingItem = this.stackItemsCheckOverlap(groupFinalItems, i, 0, i-1);
                 if (collidingItem != null) {
-                    console.log("collision! " + collidingItem.item.id);
                     // There is a collision. Reposition the event above the colliding element
                     if (axisOnTop) {
                         finalItem.top = collidingItem.top + collidingItem.height + eventMargin;
@@ -4925,27 +4918,24 @@ links.Timeline.prototype.stackCalculateFinal = function(items) {
                 }
             } while (collidingItem);
 
-            console.log("b: " + finalItem.bottom);
-
             if (axisOnTop) {
                 group.itemsHeight = (group.itemsHeight)
                                   ? Math.max(group.itemsHeight, finalItem.bottom - groupBase + eventMargin)
                                   : finalItem.height + eventMarginAxis;
             } else {
                 group.itemsHeight = (group.itemsHeight)
-                                  ? Math.max(group.itemsHeight, groupBase - finalItem.top)
+                                  ? Math.max(group.itemsHeight, groupBase - finalItem.top  + eventMargin)
                                   : finalItem.height + eventMarginAxis;
             }
         }
 
-        console.log("h: " + group.itemsHeight);
         groupFinalItems.forEach(function(item) {
            finalItems.push(item);
         });
         if (axisOnTop) {
             groupBase += group.itemsHeight + eventMargin;
         } else {
-            groupBase -= (group.itemsHeight + eventMarginAxis + eventMargin);
+            groupBase -= (group.itemsHeight + eventMargin);
         }
     }
 
@@ -4957,13 +4947,8 @@ links.Timeline.prototype.initialItemsPosition = function(items, groupBase) {
         options = this.options,
         axisOnTop = options.axisOnTop,
         eventMargin = options.eventMargin,
-        eventMarginAxis = options.eventMarginAxis,
         eventMargin = options.eventMargin,
         finalItems = [];
-
-    console.log("eventMarginAxis: " + eventMarginAxis);
-    console.log("eventMargin: " + eventMargin);
-    console.log("groupBase: " + groupBase);
 
     for (i = 0, iMax = items.length; i < iMax; ++i) {
         var item = items[i],
@@ -4974,12 +4959,9 @@ links.Timeline.prototype.initialItemsPosition = function(items, groupBase) {
             right = item.getRight(this),
             left = right - width;
 
-        if (axisOnTop) {
-            //top = groupBase + eventMarginAxis + eventMargin / 2;
-            top = groupBase + eventMargin;
-        } else {
-            top = groupBase - height - eventMarginAxis - eventMargin / 2;
-        }
+        top = (axisOnTop) ? groupBase + eventMargin
+                          : groupBase - height - eventMargin;
+
         bottom = top + height;
 
         finalItems.push({
