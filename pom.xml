@@ -98,4 +98,9 @@
         </plugins>
     </build>
 
+    <scm>
+        <connection>scm:git:git@github.com:stefanofornari/Timeline.git</connection>
+        <url>https://github.com/stefanofornari/Timeline</url>
+        <tag>HEAD</tag>
+    </scm>
 </project>
