@@ -66,33 +66,33 @@ public class BugFreeItemsByGroupStackEventsOn extends JavaScriptTest {
         assertEquals(9, ret.getLength());
 
         assertEquals("file5", exec("ret[0].item.title;"));
-        assertEquals(85.0, exec("ret[0].top;"));
-        assertEquals(40.0, exec("ret[0].item.group.itemsHeight;"));
+        assertEquals(75.0, exec("ret[0].top;"));
+        assertEquals(20.0, exec("ret[0].item.group.itemsHeight;"));
 
         assertEquals("file1", exec("ret[1].item.title;"));
-        assertEquals(85.0 , exec("ret[1].top;"));
+        assertEquals(75.0 , exec("ret[1].top;"));
 
         assertEquals("file3", exec("ret[2].item.title;"));
-        assertEquals(85.0 , exec("ret[2].top;"));
+        assertEquals(75.0 , exec("ret[2].top;"));
 
         assertEquals("file2", exec("ret[3].item.title;"));
-        assertEquals(95.0 , exec("ret[3].top;"));
+        assertEquals(85.0 , exec("ret[3].top;"));
 
         assertEquals("file4", exec("ret[4].item.title;"));
-        assertEquals(105.0 , exec("ret[4].top;"));
+        assertEquals(95.0 , exec("ret[4].top;"));
 
         assertEquals("file6", exec("ret[5].item.title;"));
-        assertEquals(85.0 , exec("ret[5].top;"));
+        assertEquals(75.0 , exec("ret[5].top;"));
 
         assertEquals("image1", exec("ret[6].item.title;"));
-        assertEquals(135.0, exec("ret[6].top;"));
-        assertEquals(30.0, exec("ret[6].item.group.itemsHeight;"));
+        assertEquals(105.0, exec("ret[6].top;"));
+        assertEquals(10.0, exec("ret[6].item.group.itemsHeight;"));
 
         assertEquals("image2", exec("ret[7].item.title;"));
-        assertEquals(145.0, exec("ret[7].top;"));
+        assertEquals(115.0, exec("ret[7].top;"));
 
         assertEquals("image3", exec("ret[8].item.title;"));
-        assertEquals(135.0, exec("ret[8].top;"));
+        assertEquals(105.0, exec("ret[8].top;"));
     }
 
     @Test
@@ -104,33 +104,33 @@ public class BugFreeItemsByGroupStackEventsOn extends JavaScriptTest {
         assertEquals(9, ret.getLength());
 
         assertEquals("file5", exec("ret[0].item.title;"));
-        assertEquals(1960.0, exec("ret[0].top;"));
-        assertEquals(40.0, exec("ret[0].item.group.itemsHeight;"));
+        assertEquals(1970.0, exec("ret[0].top;"));
+        assertEquals(20.0, exec("ret[0].item.group.itemsHeight;"));
 
         assertEquals("file1", exec("ret[1].item.title;"));
-        assertEquals(1960.0 , exec("ret[1].top;"));
+        assertEquals(1970.0 , exec("ret[1].top;"));
 
         assertEquals("file3", exec("ret[2].item.title;"));
-        assertEquals(1960.0 , exec("ret[2].top;"));
+        assertEquals(1970.0 , exec("ret[2].top;"));
 
         assertEquals("file2", exec("ret[3].item.title;"));
-        assertEquals(1950.0 , exec("ret[3].top;"));
+        assertEquals(1960.0 , exec("ret[3].top;"));
 
         assertEquals("file4", exec("ret[4].item.title;"));
-        assertEquals(1940.0 , exec("ret[4].top;"));
+        assertEquals(1950.0 , exec("ret[4].top;"));
 
         assertEquals("file6", exec("ret[5].item.title;"));
-        assertEquals(1960.0 , exec("ret[5].top;"));
+        assertEquals(1970.0 , exec("ret[5].top;"));
 
         assertEquals("image1", exec("ret[6].item.title;"));
-        assertEquals(1910.0, exec("ret[6].top;"));
-        assertEquals(30.0, exec("ret[6].item.group.itemsHeight;"));
+        assertEquals(1940.0, exec("ret[6].top;"));
+        assertEquals(10.0, exec("ret[6].item.group.itemsHeight;"));
 
         assertEquals("image2", exec("ret[7].item.title;"));
-        assertEquals(1900.0, exec("ret[7].top;"));
+        assertEquals(1930.0, exec("ret[7].top;"));
 
         assertEquals("image3", exec("ret[8].item.title;"));
-        assertEquals(1910.0, exec("ret[8].top;"));
+        assertEquals(1940.0, exec("ret[8].top;"));
     }
 
     @Test
@@ -142,8 +142,8 @@ public class BugFreeItemsByGroupStackEventsOn extends JavaScriptTest {
         //
         NativeArray ret = (NativeArray)exec("ret = timeline.stackCalculateFinal(items2);");
         assertEquals(4, ret.getLength());
-        assertEquals(20.0, exec("ret[0].item.group.itemsHeight;"));
-        assertEquals(20.0, exec("ret[1].item.group.itemsHeight;"));
+        assertEquals(10.0, exec("ret[0].item.group.itemsHeight;"));
+        assertEquals(10.0, exec("ret[1].item.group.itemsHeight;"));
     }
 
 }
