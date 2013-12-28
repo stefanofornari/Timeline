@@ -4890,48 +4890,46 @@ links.Timeline.prototype.stackCalculateFinal = function(items) {
             continue;
         }
 
-        // initialize final positions
+        // initialize final positions and fill finalItems
         groupFinalItems = this.initialItemsPosition(groupedItems[group.content], groupBase);
-
-        if (!this.options.stackEvents) {
-            continue;
-        }
+        groupFinalItems.forEach(function(item) {
+           finalItems.push(item);
+        });
 
         // calculate new, non-overlapping positions
         for (i = 0, iMax = groupFinalItems.length; i < iMax; i++) {
             var finalItem = groupFinalItems[i];
             var collidingItem = null;
 
-            do {
-                // TODO: optimize checking for overlap. when there is a gap without items,
-                //  you only need to check for items from the next item on, not from zero
-                collidingItem = this.stackItemsCheckOverlap(groupFinalItems, i, 0, i-1);
-                if (collidingItem != null) {
-                    // There is a collision. Reposition the event above the colliding element
-                    if (axisOnTop) {
-                        finalItem.top = collidingItem.top + collidingItem.height + eventMargin;
+            if (this.options.stackEvents) {
+                do {
+                    // TODO: optimize checking for overlap. when there is a gap without items,
+                    //  you only need to check for items from the next item on, not from zero
+                    collidingItem = this.stackItemsCheckOverlap(groupFinalItems, i, 0, i-1);
+                    if (collidingItem != null) {
+                        // There is a collision. Reposition the event above the colliding element
+                        if (axisOnTop) {
+                            finalItem.top = collidingItem.top + collidingItem.height + eventMargin;
+                        }
+                        else {
+                            finalItem.top = collidingItem.top - finalItem.height - eventMargin;
+                        }
+                        finalItem.bottom = finalItem.top + finalItem.height;
                     }
-                    else {
-                        finalItem.top = collidingItem.top - finalItem.height - eventMargin;
-                    }
-                    finalItem.bottom = finalItem.top + finalItem.height;
-                }
-            } while (collidingItem);
+                } while (collidingItem);
+            }
 
             if (axisOnTop) {
                 group.itemsHeight = (group.itemsHeight)
                                   ? Math.max(group.itemsHeight, finalItem.bottom - groupBase + eventMargin)
-                                  : finalItem.height + eventMarginAxis;
+                                  : finalItem.height + eventMargin;
             } else {
                 group.itemsHeight = (group.itemsHeight)
                                   ? Math.max(group.itemsHeight, groupBase - finalItem.top  + eventMargin)
-                                  : finalItem.height + eventMarginAxis;
+                                  : finalItem.height + eventMargin;
             }
         }
 
-        groupFinalItems.forEach(function(item) {
-           finalItems.push(item);
-        });
         if (axisOnTop) {
             groupBase += group.itemsHeight + eventMargin;
         } else {
