@@ -4878,11 +4878,15 @@ links.Timeline.prototype.stackCalculateFinal = function(items) {
         groupBase = (axisOnTop)
                   ? size.axis.height + eventMarginAxis + eventMargin/2
                   : size.contentHeight - eventMarginAxis - eventMargin/2,
-        finalItems = [],
-        groupFinalItems;
+        groupedItems, groupFinalItems, finalItems = [];
 
     groupedItems = this.getItemsByGroup(items);
 
+    //
+    // groupedItems contains all items by group, plus it may contain an
+    // additional "undefined" group which contains all items with no group. We
+    // first process the grouped items, and then the ungrouped
+    //
     for (j = 0; j<this.groups.length; ++j) {
         var group = this.groups[j];
 
@@ -4891,34 +4895,65 @@ links.Timeline.prototype.stackCalculateFinal = function(items) {
         }
 
         // initialize final positions and fill finalItems
-        groupFinalItems = this.initialItemsPosition(groupedItems[group.content], groupBase);
+        groupFinalItems = this.calculateItemsPosition(groupedItems[group.content], groupBase, group);
         groupFinalItems.forEach(function(item) {
            finalItems.push(item);
         });
 
-        // calculate new, non-overlapping positions
-        for (i = 0, iMax = groupFinalItems.length; i < iMax; i++) {
-            var finalItem = groupFinalItems[i];
-            var collidingItem = null;
+        if (axisOnTop) {
+            groupBase += group.itemsHeight + eventMargin;
+        } else {
+            groupBase -= (group.itemsHeight + eventMargin);
+        }
+    }
 
-            if (this.options.stackEvents) {
-                do {
-                    // TODO: optimize checking for overlap. when there is a gap without items,
-                    //  you only need to check for items from the next item on, not from zero
-                    collidingItem = this.stackItemsCheckOverlap(groupFinalItems, i, 0, i-1);
-                    if (collidingItem != null) {
-                        // There is a collision. Reposition the event above the colliding element
-                        if (axisOnTop) {
-                            finalItem.top = collidingItem.top + collidingItem.height + eventMargin;
-                        }
-                        else {
-                            finalItem.top = collidingItem.top - finalItem.height - eventMargin;
-                        }
-                        finalItem.bottom = finalItem.top + finalItem.height;
+    //
+    // Ungrouped items' turn now!
+    //
+    if (groupedItems["undefined"]) {
+        // initialize final positions and fill finalItems
+        groupFinalItems = this.calculateItemsPosition(groupedItems["undefined"], groupBase);
+        groupFinalItems.forEach(function(item) {
+           finalItems.push(item);
+        });
+    }
+
+    return finalItems;
+};
+
+links.Timeline.prototype.calculateItemsPosition = function(items, groupBase, group) {
+    var options = this.options,
+        axisOnTop = options.axisOnTop,
+        eventMargin = options.eventMargin,
+        groupFinalItems;
+
+    // initialize final positions and fill finalItems
+    groupFinalItems = this.initialItemsPosition(items, groupBase);
+
+    // calculate new, non-overlapping positions
+    for (i = 0, iMax = groupFinalItems.length; i < iMax; i++) {
+        var finalItem = groupFinalItems[i];
+        var collidingItem = null;
+
+        if (this.options.stackEvents) {
+            do {
+                // TODO: optimize checking for overlap. when there is a gap without items,
+                //  you only need to check for items from the next item on, not from zero
+                collidingItem = this.stackItemsCheckOverlap(groupFinalItems, i, 0, i-1);
+                if (collidingItem != null) {
+                    // There is a collision. Reposition the event above the colliding element
+                    if (axisOnTop) {
+                        finalItem.top = collidingItem.top + collidingItem.height + eventMargin;
                     }
-                } while (collidingItem);
-            }
+                    else {
+                        finalItem.top = collidingItem.top - finalItem.height - eventMargin;
+                    }
+                    finalItem.bottom = finalItem.top + finalItem.height;
+                }
+            } while (collidingItem);
+        }
 
+        if (group) {
             if (axisOnTop) {
                 group.itemsHeight = (group.itemsHeight)
                                   ? Math.max(group.itemsHeight, finalItem.bottom - groupBase + eventMargin)
@@ -4929,15 +4964,9 @@ links.Timeline.prototype.stackCalculateFinal = function(items) {
                                   : finalItem.height + eventMargin;
             }
         }
-
-        if (axisOnTop) {
-            groupBase += group.itemsHeight + eventMargin;
-        } else {
-            groupBase -= (group.itemsHeight + eventMargin);
-        }
     }
 
-    return finalItems;
+    return groupFinalItems;
 };
 
 links.Timeline.prototype.initialItemsPosition = function(items, groupBase) {
@@ -4973,8 +5002,7 @@ links.Timeline.prototype.initialItemsPosition = function(items, groupBase) {
     }
 
     return finalItems;
-}
-
+};
 
 /**
  * Move the events one step in the direction of their final positions
