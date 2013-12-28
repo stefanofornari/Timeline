@@ -18,8 +18,6 @@
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.mozilla.javascript.NativeArray;
-import org.mozilla.javascript.NativeObject;
-import org.mozilla.javascript.UniqueTag;
 
 import ste.xtest.js.JavaScriptTest;
 
@@ -34,11 +32,11 @@ public class BugFreeItemsByGroupStackEventsOff extends JavaScriptTest {
 
     public BugFreeItemsByGroupStackEventsOff() throws Exception {
         loadScript("src/main/javascript/timeline/timeline.js");
+        loadScript("src/test/javascript/timeline.testitem.js");
     }
 
     @Test
     public void stackCalculateFinalWithGroupsAndEmptyItemsAxisOnTop() throws Exception {
-        loadScript("src/test/javascript/timeline.testitem.js");
         loadScript("src/test/javascript/stackwithgroups3.js");
         exec("options.stackEvents = false; timeline.setOptions(options);");
 
@@ -51,7 +49,6 @@ public class BugFreeItemsByGroupStackEventsOff extends JavaScriptTest {
 
     @Test
     public void stackCalculateFinalWithGroupsAndEmptyItemsAxisAtBottom() throws Exception {
-        loadScript("src/test/javascript/timeline.testitem.js");
         loadScript("src/test/javascript/stackwithgroups3.js");
         exec("options.axisOnTop = false; options.stackEvents = false; timeline.setOptions(options);");
 
@@ -64,7 +61,6 @@ public class BugFreeItemsByGroupStackEventsOff extends JavaScriptTest {
 
     @Test
     public void stackCalculateFinalWithGroupsWithCollisionsAxisOnTop() throws Exception {
-        loadScript("src/test/javascript/timeline.testitem.js");
         loadScript("src/test/javascript/stackwithgroups3.js");
         exec("options.stackEvents = false; timeline.setOptions(options);");
 
@@ -103,7 +99,6 @@ public class BugFreeItemsByGroupStackEventsOff extends JavaScriptTest {
 
     @Test
     public void stackCalculateFinalWithGroupsWithCollisionsAxisAtBottom() throws Exception {
-        loadScript("src/test/javascript/timeline.testitem.js");
         loadScript("src/test/javascript/stackwithgroups3.js");
         exec("options.axisOnTop = false; options.stackEvents = false; timeline.setOptions(options);");
 
@@ -142,7 +137,6 @@ public class BugFreeItemsByGroupStackEventsOff extends JavaScriptTest {
 
     @Test
     public void stackCalculateFinalWithGroupsWithoutCollisionsAxisOnTop() throws Exception {
-        loadScript("src/test/javascript/timeline.testitem.js");
         loadScript("src/test/javascript/stackwithgroups3.js");
         exec("options.stackEvents = false; timeline.setOptions(options);");
 
@@ -154,5 +148,4 @@ public class BugFreeItemsByGroupStackEventsOff extends JavaScriptTest {
         assertEquals(20.0, exec("ret[0].item.group.itemsHeight;"));
         assertEquals(20.0, exec("ret[1].item.group.itemsHeight;"));
     }
-
 }
