@@ -4868,9 +4868,7 @@ links.Timeline.prototype.stackOrder = function(items) {
  * @return {Object[]} finalItems
  */
 links.Timeline.prototype.stackCalculateFinal = function(items) {
-    var i,
-        iMax,
-        size = this.size,
+    var size = this.size,
         options = this.options,
         axisOnTop = options.axisOnTop,
         eventMargin = options.eventMargin,
@@ -4922,7 +4920,9 @@ links.Timeline.prototype.stackCalculateFinal = function(items) {
 };
 
 links.Timeline.prototype.calculateItemsPosition = function(items, groupBase, group) {
-    var options = this.options,
+    var i,
+        iMax,
+        options = this.options,
         axisOnTop = options.axisOnTop,
         eventMargin = options.eventMargin,
         groupFinalItems;
