@@ -27,11 +27,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  *
- * Copyright (c) 2011-2013 Almende B.V.
+ * Copyright (c) 2011-2014 Almende B.V.
  *
- * @author     Jos de Jong, <jos@almende.org>
- * @date    2013-12-13
- * @version 2.5.1
+ * @author  Jos de Jong, <jos@almende.org>
+ * @date    2014-01-14
+ * @version 2.6.1
  */
 
 /*
@@ -192,6 +192,7 @@ links.Timeline = function(container) {
         'editable': false,
         'snapEvents': true,
         'groupChangeable': true,
+        'timeChangeable': true,
 
         'showCurrentTime': true, // show a red bar displaying the current time
         'showCustomTime': false, // show a blue, draggable bar displaying a custom time
@@ -578,6 +579,44 @@ links.Timeline.prototype.getItemIndex = function(element) {
 
     return index;
 };
+
+/**
+ * Find all elements within the start and end range
+ * If no element is found, returns an empty array
+ * @param start time
+ * @param end time
+ * @return Array itemsInRange
+ */
+links.Timeline.prototype.getVisibleItems = function  (start, end) {
+    var items = this.items;
+    var itemsInRange = [];
+
+    if (items) {
+        for (var i = 0, iMax = items.length; i < iMax; i++) {
+            var item = items[i];
+            if (item.end) {
+                // Time range object
+                if (start <= item.start && item.end <= end) {
+                    itemsInRange.push({"row": i});
+                }
+            } else {
+                // Point object
+                if (start <= item.start && item.start <= end) {
+                    itemsInRange.push({"row": i});
+                }
+            }
+        }
+    }
+
+    //     var sel = [];
+    // if (this.selection) {
+    //     sel.push({"row": this.selection.index});
+    // }
+    // return sel;
+
+    return itemsInRange;
+};
+
 
 /**
  * Set a new size for the timeline
@@ -2193,11 +2232,9 @@ links.Timeline.prototype.repaintNavigation = function () {
                 // create a new event at the center of the frame
                 var w = timeline.size.contentWidth;
                 var x = w / 2;
-                var xstart = timeline.screenToTime(x - w / 10); // subtract 10% of timeline width
-                var xend = timeline.screenToTime(x + w / 10);   // add 10% of timeline width
+                var xstart = timeline.screenToTime(x);
                 if (options.snapEvents) {
                     timeline.step.snap(xstart);
-                    timeline.step.snap(xend);
                 }
 
                 var content = options.NEW;
@@ -2205,7 +2242,6 @@ links.Timeline.prototype.repaintNavigation = function () {
                 var preventRender = true;
                 timeline.addItem({
                     'start': xstart,
-                    'end': xend,
                     'content': content,
                     'group': group
                 }, preventRender);
@@ -2746,7 +2782,7 @@ links.Timeline.prototype.onMouseMove = function (event) {
             left,
             right;
 
-        if (params.itemDragLeft) {
+        if (params.itemDragLeft && options.timeChangeable) {
             // move the start of the item
             left = params.itemLeft + diffX;
             right = params.itemRight;
@@ -2762,7 +2798,7 @@ links.Timeline.prototype.onMouseMove = function (event) {
                 item.start = this.screenToTime(left);
             }
         }
-        else if (params.itemDragRight) {
+        else if (params.itemDragRight && options.timeChangeable) {
             // move the end of the item
             left = params.itemLeft;
             right = params.itemRight + diffX;
@@ -2778,7 +2814,7 @@ links.Timeline.prototype.onMouseMove = function (event) {
                 item.end = this.screenToTime(right);
             }
         }
-        else {
+        else if (options.timeChangeable) {
             // move the item
             left = params.itemLeft + diffX;
             item.start = this.screenToTime(left);
@@ -3019,10 +3055,8 @@ links.Timeline.prototype.onDblClick = function (event) {
 
             // create a new event at the current mouse position
             var xstart = this.screenToTime(x);
-            var xend = this.screenToTime(x  + size.frameWidth / 10); // add 10% of timeline width
             if (options.snapEvents) {
                 this.step.snap(xstart);
-                this.step.snap(xend);
             }
 
             var content = options.NEW;
@@ -3030,7 +3064,6 @@ links.Timeline.prototype.onDblClick = function (event) {
             var preventRender = true;
             this.addItem({
                 'start': xstart,
-                'end': xend,
                 'content': content,
                 'group': this.getGroupName(group)
             }, preventRender);
@@ -4344,7 +4377,7 @@ links.Timeline.ItemDot.prototype.getRight = function (timeline) {
 /**
  * Retrieve the properties of an item.
  * @param {Number} index
- * @return {Object} properties  Object containing item properties:<br>
+ * @return {Object} itemData    Object containing item properties:<br>
  *                              {Date} start (required),
  *                              {Date} end (optional),
  *                              {String} content (required),
@@ -4358,28 +4391,51 @@ links.Timeline.prototype.getItem = function (index) {
         throw "Cannot get item, index out of range";
     }
 
+    // take the original data as start, includes foreign fields
+    var data = this.data,
+        itemData;
+    if (google && google.visualization &&
+        data instanceof google.visualization.DataTable) {
+        // map the datatable columns
+        var cols = links.Timeline.mapColumnIds(data);
+
+        itemData = {};
+        for (var col in cols) {
+            if (cols.hasOwnProperty(col)) {
+                itemData[col] = this.data.getValue(index, cols[col]);
+            }
+        }
+    }
+    else if (links.Timeline.isArray(this.data)) {
+        // read JSON array
+        itemData = links.Timeline.clone(this.data[index]);
+    }
+    else {
+        throw "Unknown data type. DataTable or Array expected.";
+    }
+
+    // override the data with current settings of the item (should be the same)
     var item = this.items[index];
 
-    var properties = {};
-    properties.start = new Date(item.start.valueOf());
+    itemData.start = new Date(item.start.valueOf());
     if (item.end) {
-        properties.end = new Date(item.end.valueOf());
+        itemData.end = new Date(item.end.valueOf());
     }
-    properties.content = item.content;
+    itemData.content = item.content;
     if (item.group) {
-        properties.group = this.getGroupName(item.group);
+        itemData.group = this.getGroupName(item.group);
     }
     if (item.className) {
-        properties.className = item.className;
+        itemData.className = item.className;
     }
     if (typeof item.editable !== 'undefined') {
-        properties.editable = item.editable;
+        itemData.editable = item.editable;
     }
     if (item.type) {
-        properties.type = item.type;
+        itemData.type = item.type;
     }
 
-    return properties;
+    return itemData;
 };
 
 /**
@@ -4450,15 +4506,10 @@ links.Timeline.prototype.addItems = function (itemsData, preventRender) {
  */
 links.Timeline.prototype.createItem = function(itemData) {
     var type = itemData.type || (itemData.end ? 'range' : this.options.style);
-
-// === KEEP THIS
-    //
-    // Let's make sure that event if not defined, we assign the default style
-    //
-    itemData.type = type;
-
-    itemData.group = this.getGroup(itemData.group);
-// ====
+    var data = links.Timeline.clone(itemData);
+    data.type = type;
+    data.group = this.getGroup(itemData.group);
+    // TODO: optimize this, when creating an item, all data is copied twice...
 
     // TODO: is initialTop needed?
     var initialTop,
@@ -4470,16 +4521,14 @@ links.Timeline.prototype.createItem = function(itemData) {
         initialTop = this.size.contentHeight - options.eventMarginAxis - options.eventMargin / 2;
     }
 
-// === KEEP THIS
     if (type in this.itemTypes) {
-        return new this.itemTypes[type](itemData, {'top': initialTop});
+        return new this.itemTypes[type](data, {'top': initialTop})
     }
 
     console.log('ERROR: Unknown event type "' + type + '"');
-    return new links.Timeline.Item(itemData, {
+    return new links.Timeline.Item(data, {
         'top': initialTop
     });
-// ===
 };
 
 /**
@@ -4970,14 +5019,11 @@ links.Timeline.prototype.finalItemsPosition = function(items, groupBase, group) 
 };
 
 links.Timeline.prototype.initialItemsPosition = function(items, groupBase) {
-    var size = this.size,
-        options = this.options,
+    var options = this.options,
         axisOnTop = options.axisOnTop,
-        eventMargin = options.eventMargin,
-        eventMargin = options.eventMargin,
         finalItems = [];
 
-    for (i = 0, iMax = items.length; i < iMax; ++i) {
+    for (var i = 0, iMax = items.length; i < iMax; ++i) {
         var item = items[i],
             top,
             bottom,
@@ -5017,7 +5063,7 @@ links.Timeline.prototype.stackMoveOneStep = function(currentItems, finalItems) {
     var arrived = true;
 
     // apply new positions animated
-    for (i = 0, iMax = finalItems.length; i < iMax; i++) {
+    for (var i = 0, iMax = finalItems.length; i < iMax; i++) {
         var finalItem = finalItems[i],
             item = finalItem.item;
 
@@ -5059,7 +5105,7 @@ links.Timeline.prototype.stackMoveOneStep = function(currentItems, finalItems) {
  */
 links.Timeline.prototype.stackMoveToFinal = function(currentItems, finalItems) {
     // Put the events directly at there final position
-    for (i = 0, iMax = finalItems.length; i < iMax; i++) {
+    for (var i = 0, iMax = finalItems.length; i < iMax; i++) {
         var finalItem = finalItems[i],
             current = finalItem.item;
 
@@ -6528,6 +6574,21 @@ links.Timeline.isArray = function (obj) {
         return true;
     }
     return (Object.prototype.toString.call(obj) === '[object Array]');
+};
+
+/**
+ * Shallow clone an object
+ * @param {Object} object
+ * @return {Object} clone
+ */
+links.Timeline.clone = function (object) {
+    var clone = {};
+    for (var prop in object) {
+        if (object.hasOwnProperty(prop)) {
+            clone[prop] = object[prop];
+        }
+    }
+    return clone;
 };
 
 /**
