@@ -204,8 +204,10 @@ links.Timeline = function(container) {
         'groupsOrder' : true,
         'axisOnTop': false,
         'stackEvents': true,
-        'animate': true,
-        'animateZoom': true,
+// === KEEP THIS
+        'animate': false,
+        'animateZoom': false,
+// ===
         'cluster': false,
         'style': 'box',
         'customStackOrder': false, //a function(a,b) for determining stackorder amongst a group of items. Essentially a comparator, -ve value for "a before b" and vice versa
@@ -830,7 +832,6 @@ links.Timeline.prototype.render = function(options) {
     this.clusterItems();
     this.filterItems();
     this.stackItems(animate);
-
     this.recalcItems();
 
     // TODO: only repaint when resized or when filterItems or stackItems gave a change?
