@@ -15,20 +15,20 @@
  */
 
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.BDDAssertions.then;
 import org.junit.Test;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.UniqueTag;
+import ste.xtest.js.BugFreeJavaScript;
 
-import ste.xtest.js.JavaScriptTest;
 
 
 /**
  *
  * @author ste
  */
-public class BugFreeItemsByGroup extends JavaScriptTest {
+public class BugFreeItemsByGroup extends BugFreeJavaScript {
 
     public static final String OPTION_MAX_CLUSTERING_ITEM = "maxClusterItems";
 
@@ -47,23 +47,23 @@ public class BugFreeItemsByGroup extends JavaScriptTest {
         NativeArray images = (NativeArray)ret.get("image", null);
         NativeArray files = (NativeArray)ret.get("file", null);
         NativeArray undefined = (NativeArray)ret.get("undefined", null);
-        assertEquals(3, images.getLength());
-        assertEquals("image1", exec("ret['image'][0].title"));
-        assertEquals("image2", exec("ret['image'][1].title"));
-        assertEquals("image3", exec("ret['image'][2].title"));
-        assertEquals(4, files.getLength());
-        assertEquals("file1", exec("ret['file'][0].title"));
-        assertEquals("file2", exec("ret['file'][1].title"));
-        assertEquals("file3", exec("ret['file'][2].title"));
-        assertEquals("file4", exec("ret['file'][3].title"));
-        assertEquals(1, undefined.getLength());
-        assertEquals("file5", exec("ret['undefined'][0].title"));
+        then(images.getLength()).isEqualTo(3);
+        then(exec("ret['image'][0].title")).isEqualTo("image1");
+        then(exec("ret['image'][1].title")).isEqualTo("image2");
+        then(exec("ret['image'][2].title")).isEqualTo("image3");
+        then(files.getLength()).isEqualTo(4);
+        then(exec("ret['file'][0].title")).isEqualTo("file1");
+        then(exec("ret['file'][1].title")).isEqualTo("file2");
+        then(exec("ret['file'][2].title")).isEqualTo("file3");
+        then(exec("ret['file'][3].title")).isEqualTo("file4");
+        then(undefined.getLength()).isEqualTo(1);
+        then(exec("ret['undefined'][0].title")).isEqualTo("file5");
 
         //
         // Empty array
         //
         ret = (NativeObject)exec("ret = timeline.getItemsByGroup([]);");
-        assertEquals(UniqueTag.NOT_FOUND, ret.get("image", null));
+        then(ret.get("image", null)).isEqualTo(UniqueTag.NOT_FOUND);
     }
 
     /**
@@ -83,22 +83,22 @@ public class BugFreeItemsByGroup extends JavaScriptTest {
         NativeArray images = (NativeArray)ret.get("image", null);
         NativeArray files = (NativeArray)ret.get("file", null);
         NativeArray undefined = (NativeArray)ret.get("undefined", null);
-        assertEquals(3, images.getLength());
-        assertEquals("image1", exec("ret['image'][0].title"));
-        assertEquals("image2", exec("ret['image'][1].title"));
-        assertEquals("image3", exec("ret['image'][2].title"));
-        assertEquals(4, files.getLength());
-        assertEquals("file1", exec("ret['file'][0].title"));
-        assertEquals("file2", exec("ret['file'][1].title"));
-        assertEquals("file3", exec("ret['file'][2].title"));
-        assertEquals("file4", exec("ret['file'][3].title"));
-        assertEquals(2, undefined.getLength());
-        assertEquals("file5", exec("ret['undefined'][0].title"));
+        then(images.getLength()).isEqualTo(3);
+        then(exec("ret['image'][0].title")).isEqualTo("image1");
+        then(exec("ret['image'][1].title")).isEqualTo("image2");
+        then(exec("ret['image'][2].title")).isEqualTo("image3");
+        then(files.getLength()).isEqualTo(4);
+        then(exec("ret['file'][0].title")).isEqualTo("file1");
+        then(exec("ret['file'][1].title")).isEqualTo("file2");
+        then(exec("ret['file'][2].title")).isEqualTo("file3");
+        then(exec("ret['file'][3].title")).isEqualTo("file4");
+        then(undefined.getLength()).isEqualTo(2);
+        then(exec("ret['undefined'][0].title")).isEqualTo("file5");
 
         //
         // Empty array
         //
         ret = (NativeObject)exec("ret = timeline.getItemsByGroup([]);");
-        assertEquals(UniqueTag.NOT_FOUND, ret.get("image", null));
+        then(ret.get("image", null)).isEqualTo(UniqueTag.NOT_FOUND);
     }
 }

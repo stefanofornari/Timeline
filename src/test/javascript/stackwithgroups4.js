@@ -1,6 +1,7 @@
 var options = {
     "style": "dot",
     "cluster": true,
+    "animate": false,
     "maxClusterItems": 5
 };
 

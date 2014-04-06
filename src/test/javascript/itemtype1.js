@@ -1,5 +1,6 @@
 options = {
-    "style": "box"
+    "style": "box",
+    "animate": false
 };
 
 data1 = {"title":"this will be a box","start":"2012-03-04T18:27:24Z"};

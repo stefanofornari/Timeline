@@ -2,6 +2,7 @@ var options = {
     "style": "box",
     "cluster": true,
     "maxClusterItems": 5,
+    "animate": false,
     "axisOnTop": true
 };
 
@@ -45,6 +46,7 @@ var lefts2 = [
 window.location='src/test/html/timeline1.html';
 var timeline = new links.Timeline(document.getElementById('diskone'));
 timeline.setOptions(options);
+
 timeline.size.axis = {top: 2000, height: 50};
 timeline.size.contentHeight = 1995;
 timeline.addItemType('file', test.Item);
@@ -63,5 +65,3 @@ for (i = 0; i<data2.length; ++i) {
     items2[i].createDOM();
     items2[i].setPosition(lefts2[i], lefts2[i]+200);
 }
-
-

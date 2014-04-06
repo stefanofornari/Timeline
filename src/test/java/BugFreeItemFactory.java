@@ -13,21 +13,16 @@
  * DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
  * THIS SOFTWARE OR ITS DERIVATIVES.
  */
-import java.util.Date;
-import org.junit.After;
+import static org.assertj.core.api.BDDAssertions.then;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import org.junit.Before;
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.NativeArray;
-import org.mozilla.javascript.NativeObject;
-import ste.xtest.js.JavaScriptTest;
+import ste.xtest.js.BugFreeJavaScript;
 
 /**
  *
  * @author ste
  */
-public class BugFreeItemFactory extends JavaScriptTest {
+public class BugFreeItemFactory extends BugFreeJavaScript {
 
     Context cx = null;
 
@@ -47,10 +42,10 @@ public class BugFreeItemFactory extends JavaScriptTest {
     public void itemFactory() throws Throwable {
         loadScript("src/test/javascript/itemtype1.js");
 
-        assertEquals("box", exec("item1.getType()"));    // default
-        assertEquals("image", exec("item2.getType()"));  // explicit type 1
-        assertEquals("dot", exec("item3.getType()"));    // explicit type 2
-        assertEquals("range", exec("item4.getType()"));  // range
+        then(exec("item1.getType()")).isEqualTo("box");    // default
+        then(exec("item2.getType()")).isEqualTo("image");  // explicit type 1
+        then(exec("item3.getType()")).isEqualTo("dot");    // explicit type 2
+        then(exec("item4.getType()")).isEqualTo("range");  // range
     }
 
 }

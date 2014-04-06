@@ -16,17 +16,17 @@
 
 
 import java.util.HashMap;
+import static org.assertj.core.api.BDDAssertions.then;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import ste.xtest.js.BugFreeJavaScript;
 
-import ste.xtest.js.JavaScriptTest;
 
 
 /**
  *
  * @author ste
  */
-public class BugFreeOptions extends JavaScriptTest {
+public class BugFreeOptions extends BugFreeJavaScript {
 
     public static final String OPTION_MAX_CLUSTERING_ITEM = "maxClusterItems";
 
@@ -42,10 +42,9 @@ public class BugFreeOptions extends JavaScriptTest {
         // ---------------
         //
         loadScript("src/test/javascript/options1.js");
-        assertEquals(
-            org.mozilla.javascript.NativeObject.class.getName(),
+        then(
             exec("timeline.getOptions();").getClass().getName()
-        );
+        ).isEqualTo(org.mozilla.javascript.NativeObject.class.getName());
 
         //
         // NOTE: I do not include i18n properties as I do not think they should
@@ -76,8 +75,8 @@ public class BugFreeOptions extends JavaScriptTest {
         ref.put("groupsOnRight", Boolean.FALSE);
         ref.put("axisOnTop", Boolean.FALSE);
         ref.put("stackEvents", Boolean.TRUE);
-        ref.put("animate", Boolean.TRUE);
-        ref.put("animateZoom", Boolean.TRUE);
+        ref.put("animate", Boolean.FALSE);
+        ref.put("animateZoom", Boolean.FALSE);
         ref.put("cluster", Boolean.FALSE);
         ref.put("customStackOrder", Boolean.FALSE);
         ref.put("style", "box");
@@ -85,17 +84,16 @@ public class BugFreeOptions extends JavaScriptTest {
         ref.put(OPTION_MAX_CLUSTERING_ITEM, 5);
 
         for (String key: ref.keySet()) {
-            assertEquals(ref.get(key), exec(String.format("timeline.getOptions()['%s'];", key)));
+            System.out.println("Checking " + key);
+            then(exec(String.format("timeline.getOptions()['%s'];", key))).isEqualTo(ref.get(key));
         }
 
-        assertEquals(
-            org.mozilla.javascript.Undefined.class.getName(),
+        then(
             exec("timeline.getOptions()['min'];").getClass().getName()
-        );
-        assertEquals(
-            org.mozilla.javascript.Undefined.class.getName(),
+        ).isEqualTo(org.mozilla.javascript.Undefined.class.getName());
+        then(
             exec("timeline.getOptions()['max'];").getClass().getName()
-        );
+        ).isEqualTo(org.mozilla.javascript.Undefined.class.getName());
 
         //
         // set and get
@@ -110,11 +108,11 @@ public class BugFreeOptions extends JavaScriptTest {
         ref.put("width", "50%");
         for (String key: ref.keySet()) {
             System.out.println("Cheking(2) " + key);
-            assertEquals(ref.get(key), exec(String.format("timeline.getOptions()['%s'];", key)));
+            then(exec(String.format("timeline.getOptions()['%s'];", key))).isEqualTo(ref.get(key));
         }
         exec("timeline.setOptions({'height': '50%'});");
-        assertEquals("50%", exec("timeline.getOptions()['height'];"));
-        assertEquals(Boolean.FALSE, exec("timeline.getOptions()['autoHeight'];"));
+        then(exec("timeline.getOptions()['height'];")).isEqualTo("50%");
+        then(exec("timeline.getOptions()['autoHeight'];")).isEqualTo(false);
     }
 
 }

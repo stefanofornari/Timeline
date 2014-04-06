@@ -18,17 +18,17 @@
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+import static org.assertj.core.api.BDDAssertions.then;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import ste.xtest.js.BugFreeJavaScript;
 
-import ste.xtest.js.JavaScriptTest;
 
 
 /**
  *
  * @author ste
  */
-public class BugFreeJSONDate extends JavaScriptTest {
+public class BugFreeJSONDate extends BugFreeJavaScript {
 
     public static final SimpleDateFormat DATE_ISO_UTC = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
@@ -49,7 +49,7 @@ public class BugFreeJSONDate extends JavaScriptTest {
                        DATE_ISO_UTC.format(d)
                    );
         exec(s);
-        assertEquals(Double.valueOf(d.getTime()), exec("d.getTime();"));
+        then(exec("d.getTime();")).isEqualTo(Double.valueOf(d.getTime()));
     }
 
     @Test
@@ -60,7 +60,7 @@ public class BugFreeJSONDate extends JavaScriptTest {
                        "var d = links.Timeline.parseJSONDate(1370214019000);"
                    );
         exec(s);
-        assertEquals(Double.valueOf(d.getTime()), exec("d.getTime();"));
+        then(exec("d.getTime();")).isEqualTo(Double.valueOf(d.getTime()));
     }
 
 }
