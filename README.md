@@ -11,6 +11,13 @@ If anyone has a better way to handle this, let me know :)
 Changes log
 ===========
 
+20140406
+--------
+
+- released v2.6.1 to align the version to chap-links's version
+- fixed issue with constructor and animate = true
+- improved bugfree code
+
 20131228
 --------
 
