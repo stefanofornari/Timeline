@@ -1,5 +1,13 @@
-// Instantiate our timeline object.
+console = {
+    msg: [],
+    log: function(msg) {
+        this.msg.push(msg);
+    }
+};
 
 window.location='src/test/html/timeline1.html';
-var timeline = new links.Timeline(document.getElementById('diskone'));
-timeline.setOptions({});
+var diskone = document.getElementById('diskone');
+timeline = new links.Timeline(diskone);
+timeline.draw([]);
+
+

@@ -1,5 +1,7 @@
 // Instantiate our timeline object.
 
 window.location='src/test/html/timeline1.html';
-var timeline = new links.Timeline(document.getElementById('diskone'));
-timeline.setOptions({});
+var diskone = document.getElementById('diskone');
+timeline1 = new links.Timeline(diskone);
+timeline2 = new links.Timeline(diskone, {});
+timeline3 = new links.Timeline(diskone, {zoomMin: 50, zoomable: false});
