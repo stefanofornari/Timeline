@@ -109,9 +109,11 @@ if (!Array.prototype.forEach) {
  * The timeline is developed in javascript as a Google Visualization Chart.
  *
  * @param {Element} container   The DOM element in which the Timeline will
- *                                  be created. Normally a div element.
+ *                              be created. Normally a div element.
+ * @param {Object} options      A name/value map containing settings for the
+ *                              timeline. Optional.
  */
-links.Timeline = function(container) {
+links.Timeline = function(container, options) {
     if (!container) {
         // this call was probably only for inheritance, no constructor-code is required
         return;
@@ -170,6 +172,9 @@ links.Timeline = function(container) {
 
     this.dom.container = container;
 
+    //
+    // Let's set the default options first
+    //
     this.options = {
         'width': "100%",
         'height': "auto",
@@ -226,6 +231,11 @@ links.Timeline = function(container) {
         'NEW': "New",
         'CREATE_NEW_EVENT': "Create new event"
     };
+    
+    //
+    // Now we can set the givenproperties
+    //
+    this.setOptions(options);
 
     this.clientTimeOffset = 0;    // difference between client time and the time
     // set via Timeline.setCurrentTime()
@@ -275,9 +285,14 @@ links.Timeline = function(container) {
  *                                 Object DataTable is defined in
  *                                 google.visualization.DataTable
  * @param {Object} options         A name/value map containing settings for the
- *                                 timeline. Optional.
+ *                                 timeline. Optional. The use of options here
+ *                                 is deprecated. Pass timeline options in the
+ *                                 constructor or use setOptions()
  */
 links.Timeline.prototype.draw = function(data, options) {
+    if (options) {
+        console.log("WARNING: Passing options in draw() is deprecated. Pass options to the constructur or use setOptions() instead!");
+    }
     this.setOptions(options);
 
     if (this.options.selectable) {
