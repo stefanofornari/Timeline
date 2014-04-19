@@ -145,8 +145,8 @@ public class BugFreeConstructorAndOptions extends BugFreeJavaScript {
         ref.put("groupsOnRight", Boolean.FALSE);
         ref.put("axisOnTop", Boolean.FALSE);
         ref.put("stackEvents", Boolean.TRUE);
-        ref.put("animate", Boolean.FALSE);
-        ref.put("animateZoom", Boolean.FALSE);
+        ref.put("animate", Boolean.TRUE);
+        ref.put("animateZoom", Boolean.TRUE);
         ref.put("cluster", Boolean.FALSE);
         ref.put("customStackOrder", Boolean.FALSE);
         ref.put("style", "box");
