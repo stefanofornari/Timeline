@@ -2,7 +2,7 @@ options = {
     "style": "dot",
     "cluster": true,
     "animate": false,
-    "maxClusterItems": 3
+    "clusterMaxItems": 3
 };
 
 // Instantiate our timeline object.

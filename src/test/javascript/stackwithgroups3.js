@@ -1,7 +1,7 @@
 var options = {
     "style": "box",
     "cluster": true,
-    "maxClusterItems": 5,
+    "clusterMaxItems": 5,
     "animate": false,
     "axisOnTop": true
 };

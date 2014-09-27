@@ -58,13 +58,13 @@ public class BugFreeCluster extends BugFreeJavaScript {
         //
         // granularity is fine enough not to have any item clusterd
         //
-        NativeArray clusters = (NativeArray)exec("timeline.clusterGenerator.getClusters(0.02)");
+        NativeArray clusters = (NativeArray)exec("timeline.clusterGenerator.getClusters(0.02, 5)");
         then(clusters.getLength()).isZero();
 
         //
         // We now start to cluster
         //
-        clusters = (NativeArray)exec("timeline.clusterGenerator.getClusters(0.004)");
+        clusters = (NativeArray)exec("timeline.clusterGenerator.getClusters(0.004, 5)");
         then(clusters.getLength()).isEqualTo(7);
 
         checkCluster(
@@ -120,7 +120,7 @@ public class BugFreeCluster extends BugFreeJavaScript {
         //
         // Zooming in
         //
-        clusters = (NativeArray)exec("timeline.clusterGenerator.getClusters(0.005)");
+        clusters = (NativeArray)exec("timeline.clusterGenerator.getClusters(0.005, 5)");
         then(clusters.getLength()).isEqualTo(3);
 
         checkCluster(
@@ -147,7 +147,7 @@ public class BugFreeCluster extends BugFreeJavaScript {
         //
         // Zooming in again
         //
-        clusters = (NativeArray)exec("timeline.clusterGenerator.getClusters(0.01)");
+        clusters = (NativeArray)exec("timeline.clusterGenerator.getClusters(0.01, 5)");
         then(clusters.getLength()).isEqualTo(1);
 
         checkCluster(
@@ -168,12 +168,12 @@ public class BugFreeCluster extends BugFreeJavaScript {
         loadScript("src/test/json/test1.js");
         loadScript("src/test/javascript/cluster2.js");
 
-        NativeArray clusters = (NativeArray)exec("timeline.clusterGenerator.getClusters(0.004)");
+        NativeArray clusters = (NativeArray)exec("timeline.clusterGenerator.getClusters(0.004, 3)");
         then(clusters.getLength()).isEqualTo(15);
 
         loadScript("src/test/javascript/cluster3.js");
 
-        clusters = (NativeArray)exec("timeline.clusterGenerator.getClusters(0.004)");
+        clusters = (NativeArray)exec("timeline.clusterGenerator.getClusters(0.004, 0)");
         then(clusters.getLength()).isEqualTo(18);
     }
 

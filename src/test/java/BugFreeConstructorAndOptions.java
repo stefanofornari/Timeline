@@ -28,7 +28,7 @@ import ste.xtest.js.BugFreeJavaScript;
  */
 public class BugFreeConstructorAndOptions extends BugFreeJavaScript {
 
-    public static final String OPTION_MAX_CLUSTERING_ITEM = "maxClusterItems";
+    public static final String OPTION_MAX_CLUSTERING_ITEM = "clusterMaxItems";
 
     public BugFreeConstructorAndOptions() throws Exception {
         loadScript("src/main/javascript/timeline/timeline.js");
@@ -135,7 +135,7 @@ public class BugFreeConstructorAndOptions extends BugFreeJavaScript {
         ref.put("selectable", Boolean.TRUE);
         ref.put("editable", Boolean.FALSE);
         ref.put("snapEvents", Boolean.TRUE);
-        ref.put("groupChangeable", Boolean.TRUE);
+        ref.put("groupsChangeable", Boolean.TRUE);
         ref.put("showCurrentTime", Boolean.TRUE);
         ref.put("showCustomTime", Boolean.FALSE);
         ref.put("showMajorLabels", Boolean.TRUE);
