@@ -5926,8 +5926,10 @@ links.Timeline.ClusterGenerator.prototype.getClusters = function (scale, maxItem
                             // boxes only
 // === KEEP THIS
                             // cluster item creation
+                            // note that we use the min of the start dates of 
+                            // the items of the cluster instead of the average
                             cluster = this.timeline.createItem({
-                                'start'    : new Date(avg),
+                                'start'    : new Date(min),
                                 'content'  : content,
                                 'group'    : group,
                                 'type'     : 'cluster',

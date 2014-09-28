@@ -186,10 +186,38 @@ public class BugFreeCluster extends BugFreeJavaScript {
         loadScript("src/test/json/test1.js");
         loadScript("src/test/javascript/cluster4.js");
 
-        NativeArray clusters = (NativeArray)exec("timeline.clusterGenerator.getClusters(0.005)");
+        NativeArray clusters = (NativeArray)exec("timeline.clusterGenerator.getClusters(0.005, 5)");
+        then(clusters.getLength()).isEqualTo(3);
         for (int i=0; i<clusters.getLength(); ++i) {
             NativeObject cluster = (NativeObject)clusters.get(i, null);
             then(cluster.get("type", null)).isEqualTo("cluster");
+        }
+    }
+    
+    //
+    // The 'start' property of a cluster shall be the earliest of the cluster
+    //
+    @Test
+    public void startIsTheEarliest() throws Throwable {
+        final long[] TEST_CLUSTER_STARTS = {
+            1330885644000L, 1368133699000L, 1368307071000L, 1368311118000L,
+            1368310664000L, 1368310943000L, 1368310735000L, 1370549961000L
+        };
+        
+        loadScript("src/test/json/test2.js");
+        loadScript("src/test/javascript/cluster4.js");
+         
+        NativeArray clusters = (NativeArray)exec("timeline.clusterGenerator.getClusters(0.0005, 1)");
+        
+        for (int i=0; i<clusters.getLength(); ++i) {
+            /*
+            NativeArray items = (NativeArray)((NativeObject)clusters.get(i, null)).get("items", null);
+            for (int j=0; j<items.getLength(); ++j) {
+                NativeObject item = (NativeObject)items.get(j, null);
+                System.out.println(i + ": " + item.get("id", null));
+            }
+            */
+            checkDate(TEST_CLUSTER_STARTS[i], (NativeObject)clusters.get(i, null));
         }
     }
 
@@ -212,4 +240,6 @@ public class BugFreeCluster extends BugFreeJavaScript {
         Date start = (Date)cx.jsToJava(item.get("start", null), Date.class);
         then(start.getTime()).isEqualTo(ref);
     }
+    
+    
 }
